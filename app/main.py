@@ -9,8 +9,7 @@ bc = bencodepy.Bencode(encoding="utf-8")
 # - decode_bencode(b"5:hello") -> b"hello"
 # - decode_bencode(b"10:hello12345") -> b"hello12345"
 def decode_bencode(bencoded_value):
-    return bencodepy.decode(bencoded_value)
-    return bc.decode(bencoded_value)
+  return bc.decode(bencoded_value)
 def main():
     command = sys.argv[1]
     if command == "decode":
