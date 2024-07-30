@@ -52,7 +52,7 @@ def main():
         info_hash = hashlib.sha1(bencodepy.encode(decoded_content[b"info"])).hexdigest()
         print(f'Tracker URL: {info["announce"]}')
         print(f'Length: {info["info"]["length"]}')
-        print("Info Hash: {info_hash}")
+        print(f"Info Hash: {info_hash}")
     else:
         raise NotImplementedError(f"Unknown command {command}")
 if __name__ == "__main__":
