@@ -54,7 +54,7 @@ def main():
         print(f'Length: {info["info"]["length"]}')
         print(f"Info Hash: {info_hash}")
     else:
-        raise NotImplementedError(f"Unknown command {command}")
+        raise NotImplementedError("Unknown command {command}")
 if __name__ == "__main__":
     main()
 #
