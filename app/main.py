@@ -181,7 +181,47 @@ def receive_message(s):
     return length + message
 def main():
     command = sys.argv[1]
-Expand 47 lines
+    match command:
+        case "decode":
+            bencoded_value = sys.argv[2].encode()
+            # json.dumps() can't handle bytes, but bencoded "strings" need to be
+            # bytestrings since they might contain non utf-8 characters.
+            #
+            # Here we convert them to strings for printing to the console.
+            def bytes_to_str(data):
+                if isinstance(data, bytes):
+                    return data.decode()
+                raise TypeError(f"Type not serializable: {type(data)}")
+            print(json.dumps(decode_bencode(bencoded_value)[0], default=bytes_to_str))
+        case "info":
+            torrent_file = sys.argv[2]
+            with open(torrent_file, "rb") as f:
+                torrent_data = f.read()
+            decoded_data = decode_bencode(torrent_data)[0]
+            print(f"Tracker URL: {decoded_data['announce'].decode()}")
+            print(f"Length: {decoded_data['info']['length']}")
+            print(
+                f"Info Hash: {hashlib.sha1(extract_info_hash(torrent_data)).hexdigest()}"
+            )
+            print(f"Piece Length: {decoded_data['info']['piece length']}")
+            print(
+                f"Piece Hashes: {extract_pieces_hashes(decoded_data['info']['pieces'])}"
+            )
+        case "peers":
+            torrent_file = sys.argv[2]
+            with open(torrent_file, "rb") as f:
+                torrent_data = f.read()
+            decoded_data = decode_bencode(torrent_data)[0]
+            for peer in get_peers(
+                decoded_data, hashlib.sha1(extract_info_hash(torrent_data)).digest()
+            ):
+                print(peer)
+        case "handshake":
+            peer_ip, peer_port = sys.argv[3].split(":")
+            torrent_file = sys.argv[2]
+            with open(torrent_file, "rb") as f:
+                torrent_data = f.read()
+            decoded_data = decode_bencode(torrent_data)[0]
             print(
                 f"Peer ID: {get_peer_id(peer_ip, int(peer_port), hashlib.sha1(extract_info_hash(torrent_data)).digest())}"
             )
